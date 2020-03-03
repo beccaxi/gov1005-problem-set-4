@@ -1,0 +1,112 @@
+---
+title: "Problem Set 4"
+author: "Rebecca Xi"
+date: "3/04/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(tidycensus)
+
+#
+
+income <- get_acs(
+  geography = "county",
+  variables = "B19013_001",
+  cache_table = FALSE,
+  year = 2018
+)
+```
+
+## Question #1: Mad Libs
+
+```{r Mad Libs 1, include=FALSE}
+
+# This function should take a numeric vector (like our column, estimate) and
+# calculate the standard deviation of the variable, then adds 1.
+
+# To get the code to run, I added the missing parentheses at the end of return(x
+# to make it return(x). As per the Piazza post, I also moved the +1 from inside
+# the sd() to outside, since the function is supposed to calculate standard
+# deviation first and then add 1. After seeing my answer come out in scientific
+# notation in my knitted html, I used options("scipen") to get rid of that
+# formatting in my final answer.
+
+options("scipen" = 999)
+
+sd_plus_one <- function(var, na.rm = TRUE){
+  x<- sd(var, na.rm = na.rm) + 1
+  return(x)
+  }
+
+r1 <- sd_plus_one(var = income$estimate)
+```
+
+ML 1) (Note that for all the madlibs you must call the function to receive points for this question: you cannot just manually calculate the mad lib result.) The standard deviation of median income, plus one, is `r r1`.
+
+
+```{r Mad Libs 2, include=FALSE}
+
+# This function should take a county and state pair and extracts just the state
+# name. We can do this easily because the state name is always after a comma and
+# space.
+
+# To get the code to run, I added in the missing pipe operator from countystate
+# to str_split_fixed
+
+ get_state <- function(countystate){
+  countystate %>% 
+  str_split_fixed(.,", ", 2) %>% 
+  pluck(2) %>% 
+  return()
+ }
+
+r2 <- get_state("Treasure County, Montana")
+```
+
+ML 2) Treasure County, Montana is located in the state of `r r2`.
+
+
+```{r Mad Libs 3, include=FALSE}
+
+# This function should take the geoid for a given county, grabs the median
+# income for the corresponding county, and then add the margin of error to the
+# value.
+
+# To get the code to run, I removed the extra closing parentheses from the end
+# of pull(). I also changed the argument x in function(x) to geoid, for
+# function(geoid), since geoid is the name of the argument we enter later. I
+# also fixed the discrepancy between r code chunk and Mad Lib prompt by changing
+# the given geoid from "01005" to "01055". As before, I used options("scipen")
+# to get rid of the strange scientific notation formatting in my final answer.
+
+options("scipen" = 999)
+
+upper_bound <- function(geoid){
+ income %>% 
+ filter(GEOID == geoid) %>% 
+ mutate(estimate + moe) %>% 
+ pull()
+}
+
+r3 <- upper_bound(geoid = "01055")
+```
+
+ML 3) The upper bound for median income in Etowah County, Alabama (geoid = 
+“01055”) is `r r3`.
+
+
+## Question #2: Mapping
+
+
+
+
+
+
+
+
+
+
