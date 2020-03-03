@@ -41,7 +41,7 @@ sd_plus_one <- function(var, na.rm = TRUE){
 r1 <- sd_plus_one(var = income$estimate)
 ```
 
-ML 1) (Note that for all the madlibs you must call the function to receive points for this question: you cannot just manually calculate the mad lib result.) The standard deviation of median income, plus one, is `r r1`.
+ML 1) The standard deviation of median income, plus one, is `r r1`.
 
 
 ```{r Mad Libs 2, include=FALSE}
@@ -96,7 +96,8 @@ ML 3) The upper bound for median income in Etowah County, Alabama (geoid =
 
 ```{r Mapping Setup, include=FALSE}
 
-#n
+# Here I called get_acs again to get data specific to California, which is the
+# state of interest in this question
 
 california <- get_acs(
   geography = "county",
@@ -109,21 +110,29 @@ california <- get_acs(
 
 ```{r Mapping, echo=FALSE}
   
-#
+# Having created the california dataset in the previous code chunk, here I
+# plotted it using geom_sf() and fill = estimate in order to differentiate by
+# (estimated) median income. Many of the design elements are taken from the
+# Preceptor's textbook chapter on Maps. As a note: I had to make sure to use
+# breaks= and labels= in tandem within scale_fill_viridis_c() for it to work.
 
 california %>% 
   ggplot(aes(fill = estimate)) +
   geom_sf() +
-  scale_fill_viridis_c(option = "plasma",
-                       direction = -1,
-                       breaks = c(40000, 60000, 80000, 100000),
-                       labels = c("40,000", "60,000", "80,000", "100,000")) +
-  labs(title = "Median Income by County in California",
-       caption = "Source: American Communities Survey 2018",
-       fill = "Median Income") +
+  scale_fill_viridis_c(
+    option = "plasma",
+    direction = -1,
+    breaks = c(40000, 60000, 80000, 100000),
+    labels = c("40,000", "60,000", "80,000", "100,000")
+  ) +
+  labs(
+    title = "Median Income by County in California",
+    caption = "Source: American Communities Survey 2018",
+    fill = "Median Income"
+  ) +
   theme_void()
-
 ```
+
 
 ## Question #3: Publishing to Rpubs
 
@@ -132,13 +141,51 @@ https://rpubs.com/Becca63/pset_4_rpub
 
 ## Question #4: Understanding Tufte Reading
 
-Most glaringly obvious is the wasted space on all sides of each slide. The header is unnecessarily large and padded too generously, and the font in general can be downsized to add room for more text. The overly large logo at the bottom is an example of pushy branding by LAO and contributes nothing to slide content. Bullet points throughout are misused. In many cases, the larger bullet points convey no meaningful information and serve only to introduce the sub-bullet points that follow; eliminating those header bullet points would provide space for more actual content. The numeric content on slide 9 is extremely simplified - the entire slide only conveys 8 numbers - and it is not immediately clear that the sales and use tax and the corporation tax numbers are also percentages, since the % sign is foregone. In general, it is difficult to understand the graphs and tables without any context. This holds true for the entire slide deck - it is impossible to glean a solid understanding of what's going on just by looking at the slides, since they are standalone and don't convey nearly enough information. In transforming the slide deck into an 8x11 handout, one should create an actual narrative with complete sentences, functional descriptions, as many paragraphs as needed to establish context, and transitional sentences as appropriate. The beginning of the handout should credit the actual curators of the content rather than simply "LAO" and provide a table of contents and comprehensive topic sentences throughout.
+Most glaringly obvious is the wasted space on all sides of each slide. The 
+header is unnecessarily large and padded too generously, and the font in general
+can be downsized to add room for more text. The overly large logo at the bottom 
+is an example of pushy branding by LAO and contributes nothing to slide content. 
+Bullet points throughout are misused. In many cases, the larger bullet points 
+convey no meaningful information and serve only to introduce the sub-bullet 
+points that follow; eliminating those header bullet points would provide space 
+for more actual content. The numeric content on slide 9 is extremely simplified 
+- the entire slide only conveys 8 numbers - and it is not immediately clear that
+the sales and use tax and the corporation tax numbers are also percentages, 
+since the % sign is foregone. In general, it is difficult to understand the 
+graphs and tables without any context. This holds true for the entire slide deck
+- it is impossible to glean a solid understanding of what's going on just by 
+looking at the slides, since they are standalone and don't convey nearly enough
+information. In transforming the slide deck into an 8x11 handout, one should 
+create an actual narrative with complete sentences, functional descriptions, 
+as many paragraphs as needed to establish context, and transitional sentences as
+appropriate. The beginning of the handout should credit the actual curators of 
+the content rather than simply "LAO" and provide a table of contents and 
+comprehensive topic sentences throughout.
 
 
 ## Question #5: Functions
 
 #### 5A
-In our example, we’re going to imagine that instead of using a numeric die, we’re using an alphabet die, which has every letter of the alphabet on it. Write a function called get_dice that rolls an alphabetical die n times and takes the earliest letter in the alphabet. Hint: typing the command letters will print all the letters in the english language for you. R also recognizes alphabetical order, so you can call min and max on characters. Print a call to your function with n = 3.
+
+```{r 5A, include=FALSE}
+
+# This function rolls an alphabetical die n times and takes the earliest letter
+# in the alphabet. 
+
+# Defining this function was pretty straightforward, given the existence of
+# "letters" in R and the ability to call min() to find the "smallest" letter in
+# the alphabet, so to speak
+
+get_dice <- function(n){
+  sample(letters, size = n) %>% 
+    min()
+}
+
+r5 <- get_dice(n = 3)
+```
+
+Rolling the alphabetical die 3 times yields `r r5`.
+
 
 #### 5B
 Now write a new function, roll_alpha_dice, using map_chr. This function should call your get_letters function n times. You can imagine that your “n” is the number of people thowing for a certain number of letters. Write the function so that it calls groups of 3 letters. You don’t need to print anything.
