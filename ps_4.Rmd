@@ -168,16 +168,17 @@ comprehensive topic sentences throughout.
 
 #### 5A
 
-```{r 5A}
+```{r 5A, include=FALSE}
 
 # This function rolls an alphabetical die n times and takes the earliest letter
 # in the alphabet. 
 
 # Defining this function was pretty straightforward, given the existence of
 # "letters" in R and the ability to call min() to find the "smallest" letter in
-# the alphabet
+# the alphabet. I also call stopifnot as described in 6.1.5 in PPBDS.
 
 get_letters <- function(n){
+  stopifnot(is.numeric(n)) 
   sample(letters, size = n) %>% 
     min()
 }
@@ -190,113 +191,116 @@ Rolling the alphabetical die 3 times yields `r r4`.
 
 #### 5B
 
-```{r 5B}
+```{r 5B, include=FALSE}
 
 # This function calls the get_letters function n times (imagine that "n" is the
 # number of people throwing for a certain number of letters). The function calls
 # groups of 3 letters.
 
-# The function defined below essentially maps the (singular) result of get_dice
-# n times, from 1 to n, in a tibble
-
-# CHECK THIS!!!!
+# The function defined below maps the result of get_letters (which is set with
+# argument 3) n times in the form of a row vector
 
 roll_alpha_dice <- function(n){
-  map_chr(1:n, ~ get_letters(3))
+  stopifnot(is.numeric(n)) 
+  map_chr(rep(3, n), get_letters)
 }
 ```
+
+See RMarkdown file for function.
 
 
 #### 5C
 
-```{r 5C}
+```{r 5C, include=FALSE}
 
 # Here I make a tibble that stores the results of the 4 TF's playing this game
-# 100 times, followed by a gt table showing the first 5 rows.
+# 100 times. The function roll_alpha_dice() already has a "default" of
+# get_letters(3) to get 3 letters per player per game, and for the tibble we now
+# set a "default" of roll_alpha_dice(4) to account for the 4 players in the
+# game. I specify rep(4, 100) to model the game being played 100 times, and I
+# expect to see a tibble with 100 rows as a result.
 
-# The function roll_alpha_dice() already has a "default" of get_letters(3) to
-# get 3 letters per player per game, and for the tibble we now set a "default"
-# of roll_alpha_dice(4) to account for the 4 players in the game. I specify
-# 1:100 to model the game being played 100 times.
+r5 <- tibble(results = map(rep(4, 100), ~ roll_alpha_dice(4)))
 
-#r5 <- tibble(map_chr(1:100, ~ roll_alpha_dice(4)))
+# This gt table shows the first 5 rows of r5, each row containing 4 letters
+# separated by commas (i.e. not in separate columns)
 
-# Make a gt table showing the first 5 rows.
-# Each row of your gtable should have four letters. Let’s imagine that the first
-# letter in each row is the letter that Alyssa rolled. Using the same scenario
-# of 100 rolls and 4 tfs rolling 3 dice, use a map_lgl command to create a
-# column “vowel”, which tests whether the first letter of each row is a vowel
-# (a,e,i,o,u). Report how many times the letter selected was a vowel. For example, we had 28 vowels.
-
-'r6 <- r5 %>% 
+r6 <- r5 %>% 
+  rename("First Five Games" = results) %>% 
   slice(1:5) %>% 
-  gt()'
+  gt()
+
+# Moving on: here I create a simple function to test whether a letter is a vowel
+# or not, for use in the next step within mutate()
+
+isvowel <- function(char){
+  char %in% c('a', 'e', 'i', 'o', 'u')
+} 
+
+# Here I modify my complete table of 100 games, r5, by using mutate() and
+# map_lgl() to create a new column "vowel". In each row, "vowel" records a value
+# of either TRUE or FALSE, i.e. the output of my new function isvowel applied to
+# the first character of each row.
+
+withvowel <- r5 %>% 
+  mutate(vowel = map_lgl(results, ~ isvowel(.[[1]])))
+
+# Here I count how many times Alyssa's letter is a vowel within the 100 games
+
+r7 <- withvowel %>% 
+  filter(vowel == TRUE) %>% 
+  count()
 ```
 
+`r r6`
+
+In 100 games, Alyssa rolls `r r7` vowels.
 
 
 #### 5D
 
-```{r 5D}
+```{r 5D, include=FALSE}
 
-# This function rolls an alphabetical die n times and takes the earliest letter
-# in the alphabet. 
+# How surprised would you be if for all four tf’s the earliest alphabetical
+# letter they rolled was a vowel? Using a tibble that shows the four tf’s
+# playing the game 10,000 times, calculate the probability that they all roll a
+# vowel.
 
-# Defining this function was pretty straightforward, given the existence of
-# "letters" in R and the ability to call min() to find the "smallest" letter in
-# the alphabet, so to speak
+# 
 
-get_dice <- function(n){
-  sample(letters, size = n) %>% 
-    min()
-}
 
-r5 <- get_dice(n = 3)
+
 ```
 
-How surprised would you be if for all four tf’s the earliest alphabetical letter they rolled was a vowel? Using a tibble that shows the four tf’s playing the game 10,000 times, calculate the probability that they all roll a vowel.
 
 #### 5E
 
 ```{r 5E}
 
-# This function rolls an alphabetical die n times and takes the earliest letter
-# in the alphabet. 
+# Using your functions, make a simple plot mapping the distribution of “first”
+# letters in 1000 rolls of 3 dice. For this example, you can use a single “tf”
+# (n = 1) when you call roll_alpha_dice. Hint: You might want to check out what
+# unnest does.
 
-# Defining this function was pretty straightforward, given the existence of
-# "letters" in R and the ability to call min() to find the "smallest" letter in
-# the alphabet, so to speak
+#
 
-get_dice <- function(n){
-  sample(letters, size = n) %>% 
-    min()
-}
 
-r5 <- get_dice(n = 3)
 ```
 
-Using your functions, make a simple plot mapping the distribution of “first” letters in 1000 rolls of 3 dice. For this example, you can use a single “tf” (n = 1) when you call roll_alpha_dice. Hint: You might want to check out what unnest does.
 
 #### 5F
 
 ```{r 5F}
 
-# This function rolls an alphabetical die n times and takes the earliest letter
-# in the alphabet. 
+# Finally, make a plot comparing 5E (selecting the earliest alphabetical letter
+# from 3 dice) with an exercise where the first letter is selected from 5 dice.
+# How does the distribution shift?
 
-# Defining this function was pretty straightforward, given the existence of
-# "letters" in R and the ability to call min() to find the "smallest" letter in
-# the alphabet, so to speak
+#
 
-get_dice <- function(n){
-  sample(letters, size = n) %>% 
-    min()
-}
 
-r5 <- get_dice(n = 3)
 ```
 
-Finally, make a plot comparing 5E (selecting the earliest alphabetical letter from 3 dice) with an exercise where the first letter is selected from 5 dice. How does the distribution shift?
 
 
 
@@ -304,4 +308,8 @@ Finally, make a plot comparing 5E (selecting the earliest alphabetical letter fr
 
 * Grace Pan
 * Brendan Chapuis
+* Michael Chen
+* Rachel Phan
+* Brian Kim
+* Hudson Miller
 
