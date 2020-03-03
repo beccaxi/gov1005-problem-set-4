@@ -1,0 +1,33 @@
+
+
+```{r Data, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(tidycensus)
+library(ggplot2)
+
+california <- get_acs(
+  geography = "county",
+  variables = "B19013_001",
+  state = "CA",
+  year = 2018,
+  geometry = TRUE
+)
+```
+
+```{r Plotting, echo=FALSE}
+  
+california %>% 
+  ggplot(aes(fill = estimate)) +
+  geom_sf() +
+  scale_fill_viridis_c(option = "plasma",
+                       direction = -1,
+                       breaks = c(40000, 60000, 80000, 100000),
+                       labels = c("40,000", "60,000", "80,000", "100,000")) +
+  labs(title = "Median Income by County in California",
+       caption = "Source: American Communities Survey 2018",
+       fill = "Median Income") +
+  theme_void()
+```
+

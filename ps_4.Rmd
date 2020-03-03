@@ -6,19 +6,19 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, options(scipen = 999))
 
 library(tidyverse)
 library(tidycensus)
+library(ggplot2)
 
-#
+# Here I load the data I'll need for the rest of this pset
 
 income <- get_acs(
   geography = "county",
   variables = "B19013_001",
-  cache_table = FALSE,
   year = 2018
-)
+) 
 ```
 
 ## Question #1: Mad Libs
@@ -31,11 +31,7 @@ income <- get_acs(
 # To get the code to run, I added the missing parentheses at the end of return(x
 # to make it return(x). As per the Piazza post, I also moved the +1 from inside
 # the sd() to outside, since the function is supposed to calculate standard
-# deviation first and then add 1. After seeing my answer come out in scientific
-# notation in my knitted html, I used options("scipen") to get rid of that
-# formatting in my final answer.
-
-options("scipen" = 999)
+# deviation first and then add 1. 
 
 sd_plus_one <- function(var, na.rm = TRUE){
   x<- sd(var, na.rm = na.rm) + 1
@@ -80,10 +76,7 @@ ML 2) Treasure County, Montana is located in the state of `r r2`.
 # of pull(). I also changed the argument x in function(x) to geoid, for
 # function(geoid), since geoid is the name of the argument we enter later. I
 # also fixed the discrepancy between r code chunk and Mad Lib prompt by changing
-# the given geoid from "01005" to "01055". As before, I used options("scipen")
-# to get rid of the strange scientific notation formatting in my final answer.
-
-options("scipen" = 999)
+# the given geoid from "01005" to "01055". 
 
 upper_bound <- function(geoid){
  income %>% 
@@ -101,12 +94,75 @@ ML 3) The upper bound for median income in Etowah County, Alabama (geoid =
 
 ## Question #2: Mapping
 
+```{r Mapping Setup, include=FALSE}
+
+#n
+
+california <- get_acs(
+  geography = "county",
+  variables = "B19013_001",
+  state = "CA",
+  year = 2018,
+  geometry = TRUE
+)
+```
+
+```{r Mapping, echo=FALSE}
+  
+#
+
+california %>% 
+  ggplot(aes(fill = estimate)) +
+  geom_sf() +
+  scale_fill_viridis_c(option = "plasma",
+                       direction = -1,
+                       breaks = c(40000, 60000, 80000, 100000),
+                       labels = c("40,000", "60,000", "80,000", "100,000")) +
+  labs(title = "Median Income by County in California",
+       caption = "Source: American Communities Survey 2018",
+       fill = "Median Income") +
+  theme_void()
+
+```
+
+## Question #3: Publishing to Rpubs
+
+https://rpubs.com/Becca63/pset_4_rpub
+
+
+## Question #4: Understanding Tufte Reading
+
+Most glaringly obvious is the wasted space on all sides of each slide. The header is unnecessarily large and padded too generously, and the font in general can be downsized to add room for more text. The overly large logo at the bottom is an example of pushy branding by LAO and contributes nothing to slide content. Bullet points throughout are misused. In many cases, the larger bullet points convey no meaningful information and serve only to introduce the sub-bullet points that follow; eliminating those header bullet points would provide space for more actual content. The numeric content on slide 9 is extremely simplified - the entire slide only conveys 8 numbers - and it is not immediately clear that the sales and use tax and the corporation tax numbers are also percentages, since the % sign is foregone. In general, it is difficult to understand the graphs and tables without any context. This holds true for the entire slide deck - it is impossible to glean a solid understanding of what's going on just by looking at the slides, since they are standalone and don't convey nearly enough information. In transforming the slide deck into an 8x11 handout, one should create an actual narrative with complete sentences, functional descriptions, as many paragraphs as needed to establish context, and transitional sentences as appropriate. The beginning of the handout should credit the actual curators of the content rather than simply "LAO" and provide a table of contents and comprehensive topic sentences throughout.
+
+
+## Question #5: Functions
+
+#### 5A
+In our example, we’re going to imagine that instead of using a numeric die, we’re using an alphabet die, which has every letter of the alphabet on it. Write a function called get_dice that rolls an alphabetical die n times and takes the earliest letter in the alphabet. Hint: typing the command letters will print all the letters in the english language for you. R also recognizes alphabetical order, so you can call min and max on characters. Print a call to your function with n = 3.
+
+#### 5B
+Now write a new function, roll_alpha_dice, using map_chr. This function should call your get_letters function n times. You can imagine that your “n” is the number of people thowing for a certain number of letters. Write the function so that it calls groups of 3 letters. You don’t need to print anything.
+
+#### 5C
+Imagine that the Tf’s (Alyssa, Kaneesha, Mitchell and June) are playing a game where they each roll for three letters. Make a tibble that stores the results of them playing this game 100 times. Make a gt table showing the first 5 rows.
+
+Each row of your gtable should have four letters. Let’s imagine that the first letter in each row is the letter that Alyssa rolled. Using the same scenario of 100 rolls and 4 tfs rolling 3 dice, use a map_lgl command to create a column “vowel”, which tests whether the first letter of each row is a vowel (a,e,i,o,u). Report how many times the letter selected was a vowel.
+
+For example, we had 28 vowels.
+
+#### 5D
+How surprised would you be if for all four tf’s the earliest alphabetical letter they rolled was a vowel? Using a tibble that shows the four tf’s playing the game 10,000 times, calculate the probability that they all roll a vowel.
+
+#### 5E
+Using your functions, make a simple plot mapping the distribution of “first” letters in 1000 rolls of 3 dice. For this example, you can use a single “tf” (n = 1) when you call roll_alpha_dice. Hint: You might want to check out what unnest does.
+
+#### 5F
+Finally, make a plot comparing 5E (selecting the earliest alphabetical letter from 3 dice) with an exercise where the first letter is selected from 5 dice. How does the distribution shift?
 
 
 
+#### Colleagues:
 
-
-
-
-
+* Grace Pan
+* Brendan Chapuis
 
