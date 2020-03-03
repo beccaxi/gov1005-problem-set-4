@@ -391,28 +391,109 @@ summary {
 <h2>Question #5: Functions</h2>
 <div id="a" class="section level4">
 <h4>5A</h4>
-<p>5A: Rolling the alphabetical die 3 times yields l.</p>
+<pre class="r"><code># This function rolls an alphabetical die n times and takes the earliest letter
+# in the alphabet. 
+
+# Defining this function was pretty straightforward, given the existence of
+# &quot;letters&quot; in R and the ability to call min() to find the &quot;smallest&quot; letter in
+# the alphabet
+
+get_letters &lt;- function(n){
+  sample(letters, size = n) %&gt;% 
+    min()
+}
+
+r4 &lt;- get_letters(n = 3)</code></pre>
+<p>Rolling the alphabetical die 3 times yields g.</p>
 </div>
 <div id="b" class="section level4">
 <h4>5B</h4>
-<p>Now write a new function, roll_alpha_dice, using map_chr. This function should call your get_letters function n times. You can imagine that your “n” is the number of people thowing for a certain number of letters. Write the function so that it calls groups of 3 letters. You don’t need to print anything.</p>
+<pre class="r"><code># This function calls the get_letters function n times (imagine that &quot;n&quot; is the
+# number of people throwing for a certain number of letters). The function calls
+# groups of 3 letters.
+
+# The function defined below essentially maps the (singular) result of get_dice
+# n times, from 1 to n, in a tibble
+
+# CHECK THIS!!!!
+
+roll_alpha_dice &lt;- function(n){
+  map_chr(1:n, ~ get_letters(3))
+}</code></pre>
 </div>
 <div id="c" class="section level4">
 <h4>5C</h4>
-<p>Imagine that the Tf’s (Alyssa, Kaneesha, Mitchell and June) are playing a game where they each roll for three letters. Make a tibble that stores the results of them playing this game 100 times. Make a gt table showing the first 5 rows.</p>
-<p>Each row of your gtable should have four letters. Let’s imagine that the first letter in each row is the letter that Alyssa rolled. Using the same scenario of 100 rolls and 4 tfs rolling 3 dice, use a map_lgl command to create a column “vowel”, which tests whether the first letter of each row is a vowel (a,e,i,o,u). Report how many times the letter selected was a vowel.</p>
-<p>For example, we had 28 vowels.</p>
+<pre class="r"><code># Here I make a tibble that stores the results of the 4 TF&#39;s playing this game
+# 100 times, followed by a gt table showing the first 5 rows.
+
+# The function roll_alpha_dice() already has a &quot;default&quot; of get_letters(3) to
+# get 3 letters per player per game, and for the tibble we now set a &quot;default&quot;
+# of roll_alpha_dice(4) to account for the 4 players in the game. I specify
+# 1:100 to model the game being played 100 times.
+
+#r5 &lt;- tibble(map_chr(1:100, ~ roll_alpha_dice(4)))
+
+# Make a gt table showing the first 5 rows.
+# Each row of your gtable should have four letters. Let’s imagine that the first
+# letter in each row is the letter that Alyssa rolled. Using the same scenario
+# of 100 rolls and 4 tfs rolling 3 dice, use a map_lgl command to create a
+# column “vowel”, which tests whether the first letter of each row is a vowel
+# (a,e,i,o,u). Report how many times the letter selected was a vowel. For example, we had 28 vowels.
+
+&#39;r6 &lt;- r5 %&gt;% 
+  slice(1:5) %&gt;% 
+  gt()&#39;</code></pre>
+<pre><code>## [1] &quot;r6 &lt;- r5 %&gt;% \n  slice(1:5) %&gt;% \n  gt()&quot;</code></pre>
 </div>
 <div id="d" class="section level4">
 <h4>5D</h4>
+<pre class="r"><code># This function rolls an alphabetical die n times and takes the earliest letter
+# in the alphabet. 
+
+# Defining this function was pretty straightforward, given the existence of
+# &quot;letters&quot; in R and the ability to call min() to find the &quot;smallest&quot; letter in
+# the alphabet, so to speak
+
+get_dice &lt;- function(n){
+  sample(letters, size = n) %&gt;% 
+    min()
+}
+
+r5 &lt;- get_dice(n = 3)</code></pre>
 <p>How surprised would you be if for all four tf’s the earliest alphabetical letter they rolled was a vowel? Using a tibble that shows the four tf’s playing the game 10,000 times, calculate the probability that they all roll a vowel.</p>
 </div>
 <div id="e" class="section level4">
 <h4>5E</h4>
+<pre class="r"><code># This function rolls an alphabetical die n times and takes the earliest letter
+# in the alphabet. 
+
+# Defining this function was pretty straightforward, given the existence of
+# &quot;letters&quot; in R and the ability to call min() to find the &quot;smallest&quot; letter in
+# the alphabet, so to speak
+
+get_dice &lt;- function(n){
+  sample(letters, size = n) %&gt;% 
+    min()
+}
+
+r5 &lt;- get_dice(n = 3)</code></pre>
 <p>Using your functions, make a simple plot mapping the distribution of “first” letters in 1000 rolls of 3 dice. For this example, you can use a single “tf” (n = 1) when you call roll_alpha_dice. Hint: You might want to check out what unnest does.</p>
 </div>
 <div id="f" class="section level4">
 <h4>5F</h4>
+<pre class="r"><code># This function rolls an alphabetical die n times and takes the earliest letter
+# in the alphabet. 
+
+# Defining this function was pretty straightforward, given the existence of
+# &quot;letters&quot; in R and the ability to call min() to find the &quot;smallest&quot; letter in
+# the alphabet, so to speak
+
+get_dice &lt;- function(n){
+  sample(letters, size = n) %&gt;% 
+    min()
+}
+
+r5 &lt;- get_dice(n = 3)</code></pre>
 <p>Finally, make a plot comparing 5E (selecting the earliest alphabetical letter from 3 dice) with an exercise where the first letter is selected from 5 dice. How does the distribution shift?</p>
 </div>
 <div id="colleagues" class="section level4">
