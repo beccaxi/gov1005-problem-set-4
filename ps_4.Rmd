@@ -261,44 +261,112 @@ In 100 games, Alyssa rolls `r r7` vowels.
 
 ```{r 5D, include=FALSE}
 
-# How surprised would you be if for all four tf’s the earliest alphabetical
-# letter they rolled was a vowel? Using a tibble that shows the four tf’s
-# playing the game 10,000 times, calculate the probability that they all roll a
-# vowel.
+# Here I create a tibble identical to the one in the beginning of 5C, replacing
+# 100 with 10000. I then call isvowel() on each element of the list in each row.
 
-# 
+tibble10K <- tibble(results = map(rep(4, 10000), ~ roll_alpha_dice(4)))
 
+tibble10K_vowels <- tibble10K %>% 
+  mutate(vowel = map_lgl(
+    results, 
+    ~ isvowel(.[[1]]) & isvowel(.[[2]]) & isvowel(.[[3]]) & isvowel(.[[4]])
+    )
+  )
 
+# Here I count how many times all 4 letters are vowels within the 10,000 games,
+# and divide that number by 10,000 in order to find the probability that all 4
+# letters in a game are vowels. Finally, I multiply by 100 to convert to a
+# percentage.
 
+r8 <- tibble10K_vowels %>% 
+  filter(vowel == TRUE) %>% 
+  count()
+
+r8 <- 100 * (r8 / 10000)
 ```
+
+The probability that all four TF's roll vowels is `r r8`%.
 
 
 #### 5E
 
-```{r 5E}
+```{r 5E, echo=FALSE}
 
-# Using your functions, make a simple plot mapping the distribution of “first”
-# letters in 1000 rolls of 3 dice. For this example, you can use a single “tf”
-# (n = 1) when you call roll_alpha_dice. Hint: You might want to check out what
-# unnest does.
+# First I create a new table for just one TF and 1000 games, using unnest() as
+# directed by the hint to (rather unnecessarily, perhaps) convert a list of 1
+# element into a list of single characters to facilitate plotting in the next
+# step
 
-#
+firstletter <- tibble(result = map(rep(1, 1000), ~ roll_alpha_dice(1))) %>% 
+  unnest(result)
 
+# Now I use geom_bar() to plot a bar graph mapping the distribution of "first"
+# letters in 1000 rolls of 3 dice. geom_bar() is nice in that it automatically
+# counts the number of occurrences of each letter in the alphabet. x, y, and z
+# don't appear often or at all in the resulting plot, which makes sense given
+# the "min" selecting nature of the original base function.
 
+firstletter_distribution <- firstletter %>% 
+  rename("Letters" = result) %>% 
+  ggplot(aes(x = Letters)) +
+    geom_bar() +
+    ylab("Count") +
+    theme_classic()
+
+firstletter_distribution
 ```
 
 
 #### 5F
 
-```{r 5F}
+```{r 5F, echo=FALSE}
 
-# Finally, make a plot comparing 5E (selecting the earliest alphabetical letter
-# from 3 dice) with an exercise where the first letter is selected from 5 dice.
-# How does the distribution shift?
+# First I create a new function, equivalent to roll_alpha_dice except in that
+# the first letter is selected from 5 dice via get_letters.
 
-#
+roll_five_dice <- function(n){
+  stopifnot(is.numeric(n)) 
+  map_chr(rep(5, n), get_letters)
+}
 
+# Here I create a tibble storing 1000 games using the new roll_five_dice, as
+# before in 5C. I also redefine/rename the former firstletter (from 5E) to
+# threeletters to avoid confusion while plotting. In anticipation of binding the
+# two tibbles (I want to be able to keep track of which rows correspond to which
+# datasets), I create a new column "data" for each one containing either "three"
+# or "five", as appropriate.
 
+fiveletters <- tibble(result = map(rep(1, 1000), ~ roll_five_dice(1))) %>% 
+  mutate(data = "Five Dice") %>% 
+  unnest(result)
+threeletters <- tibble(result = map(rep(1, 1000), ~ roll_alpha_dice(1))) %>% 
+  mutate(data = "Three Dice") %>% 
+  unnest(result)
+
+# For comparative plotting using facet_wrap, I concatenate the two tibbles
+
+compare <- threeletters %>% 
+  rbind(fiveletters) 
+
+# Finally, I create the plots for the data from threeletters and the data from
+# fiveletters adjacent to each other using facet_wrap on the variable data
+# (which differentiates the two datasets). I rename some of the variables to
+# make the plots more readable. We see, unsurprisingly, that the distribution
+# where the first letter is selected from 5 dice is skewed to the left and up.
+# This makes a lot of sense since the selected "minimum" letter is more likely
+# to be earlier in the alphabet in the exercise where there is a greater
+# (distributed) number of dice to select from.
+
+plots <- compare %>%
+  ggplot(aes(x = result)) +
+    geom_bar() +
+    facet_wrap(~data) +
+    labs(title = "Minimum Letter from Five Dice vs. Three Dice") +
+    xlab("Letters") +
+    ylab("Count") +
+    theme_classic()
+
+plots
 ```
 
 
@@ -312,4 +380,7 @@ In 100 games, Alyssa rolls `r r7` vowels.
 * Rachel Phan
 * Brian Kim
 * Hudson Miller
+* Mak Famulari
+* Rachel Auslander
+* Josh Mathews
 
