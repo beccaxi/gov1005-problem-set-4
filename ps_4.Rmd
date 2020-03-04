@@ -22,22 +22,23 @@ income <- get_acs(
 ) 
 ```
 
+
 ## Question #1: Mad Libs
 
 ```{r Mad Libs 1, include=FALSE}
 
 # This function should take a numeric vector (like our column, estimate) and
-# calculate the standard deviation of the variable, then adds 1.
+# calculate the standard deviation of the variable, then add 1.
 
 # To get the code to run, I added the missing parentheses at the end of return(x
 # to make it return(x). As per the Piazza post, I also moved the +1 from inside
 # the sd() to outside, since the function is supposed to calculate standard
 # deviation first and then add 1. 
 
-sd_plus_one <- function(var, na.rm = TRUE){
-  x<- sd(var, na.rm = na.rm) + 1
+sd_plus_one <- function(var, na.rm = TRUE) {
+  x <- sd(var, na.rm = na.rm) + 1
   return(x)
-  }
+}
 
 r1 <- sd_plus_one(var = income$estimate)
 ```
@@ -47,19 +48,19 @@ ML 1) The standard deviation of median income, plus one, is `r r1`.
 
 ```{r Mad Libs 2, include=FALSE}
 
-# This function should take a county and state pair and extracts just the state
-# name. We can do this easily because the state name is always after a comma and
+# This function should take a county and state pair and extract just the state
+# name. We can do this easily because the state name always follows a comma and
 # space.
 
 # To get the code to run, I added in the missing pipe operator from countystate
 # to str_split_fixed
 
- get_state <- function(countystate){
-  countystate %>% 
+get_state <- function(countystate) {
+  countystate %>%
   str_split_fixed(.,", ", 2) %>% 
   pluck(2) %>% 
   return()
- }
+}
 
 r2 <- get_state("Treasure County, Montana")
 ```
@@ -69,17 +70,16 @@ ML 2) Treasure County, Montana is located in the state of `r r2`.
 
 ```{r Mad Libs 3, include=FALSE}
 
-# This function should take the geoid for a given county, grabs the median
-# income for the corresponding county, and then add the margin of error to the
-# value.
+# This function should take the geoid for a given county, grab the median income
+# for the corresponding county, and then add the margin of error to the value.
 
 # To get the code to run, I removed the extra closing parentheses from the end
 # of pull(). I also changed the argument x in function(x) to geoid, for
 # function(geoid), since geoid is the name of the argument we enter later. I
 # also fixed the discrepancy between r code chunk and Mad Lib prompt by changing
-# the given geoid from "01005" to "01055". 
+# the given geoid from "01005" to "01055".
 
-upper_bound <- function(geoid){
+upper_bound <- function(geoid) {
  income %>% 
  filter(GEOID == geoid) %>% 
  mutate(estimate + moe) %>% 
@@ -97,8 +97,8 @@ ML 3) The upper bound for median income in Etowah County, Alabama (geoid =
 
 ```{r Mapping Setup, include=FALSE}
 
-# Here I called get_acs again to get data specific to California, which is the
-# state of interest in this question
+# Here I call get_acs again to get only data for California, which is the state
+# of interest in this question
 
 california <- get_acs(
   geography = "county",
@@ -109,29 +109,29 @@ california <- get_acs(
 )
 ```
 
-```{r Mapping, echo=FALSE}
+```{r Mapping Plot, echo=FALSE}
   
-# Having created the california dataset in the previous code chunk, here I
-# plotted it using geom_sf() and fill = estimate in order to differentiate by
+# Having created the california dataset in the previous code chunk, I plot it
+# here using geom_sf() and fill = estimate in order to differentiate by
 # (estimated) median income. Many of the design elements are taken from the
 # Preceptor's textbook chapter on Maps. As a note: I had to make sure to use
 # breaks= and labels= in tandem within scale_fill_viridis_c() for it to work.
 
 california %>% 
   ggplot(aes(fill = estimate)) +
-  geom_sf() +
-  scale_fill_viridis_c(
-    option = "plasma",
-    direction = -1,
-    breaks = c(40000, 60000, 80000, 100000),
-    labels = c("40,000", "60,000", "80,000", "100,000")
-  ) +
-  labs(
-    title = "Median Income by County in California",
-    caption = "Source: American Communities Survey 2018",
-    fill = "Median Income"
-  ) +
-  theme_void()
+    geom_sf() +
+    scale_fill_viridis_c(
+      option = "plasma",
+      direction = -1,
+      breaks = c(40000, 60000, 80000, 100000),
+      labels = c("40,000", "60,000", "80,000", "100,000")
+    ) +
+    labs(
+      title = "Median Income by County in California",
+      caption = "Source: American Communities Survey 2018",
+      fill = "Median Income"
+    ) +
+    theme_void()
 ```
 
 
@@ -171,13 +171,13 @@ comprehensive topic sentences throughout.
 ```{r 5A, include=FALSE}
 
 # This function rolls an alphabetical die n times and takes the earliest letter
-# in the alphabet. 
+# in the alphabet.
 
 # Defining this function was pretty straightforward, given the existence of
 # "letters" in R and the ability to call min() to find the "smallest" letter in
 # the alphabet. I also call stopifnot as described in 6.1.5 in PPBDS.
 
-get_letters <- function(n){
+get_letters <- function(n) {
   stopifnot(is.numeric(n)) 
   sample(letters, size = n) %>% 
     min()
@@ -200,7 +200,7 @@ Rolling the alphabetical die 3 times yields `r r4`.
 # The function defined below maps the result of get_letters (which is set with
 # argument 3) n times in the form of a row vector
 
-roll_alpha_dice <- function(n){
+roll_alpha_dice <- function(n) {
   stopifnot(is.numeric(n)) 
   map_chr(rep(3, n), get_letters)
 }
@@ -230,10 +230,12 @@ r6 <- r5 %>%
   slice(1:5) %>% 
   gt()
 
+r6
+
 # Moving on: here I create a simple function to test whether a letter is a vowel
 # or not, for use in the next step within mutate()
 
-isvowel <- function(char){
+isvowel <- function(char) {
   char %in% c('a', 'e', 'i', 'o', 'u')
 } 
 
@@ -251,8 +253,6 @@ r7 <- withvowel %>%
   filter(vowel == TRUE) %>% 
   count()
 ```
-
-`r r6`
 
 In 100 games, Alyssa rolls `r r7` vowels.
 
@@ -285,7 +285,8 @@ r8 <- tibble10K_vowels %>%
 r8 <- 100 * (r8 / 10000)
 ```
 
-The probability that all four TF's roll vowels is `r r8`%.
+The probability that all four TF's roll vowels is `r r8`%. I would be extremely 
+surprised if this occurred.
 
 
 #### 5E
@@ -310,6 +311,7 @@ firstletter_distribution <- firstletter %>%
   rename("Letters" = result) %>% 
   ggplot(aes(x = Letters)) +
     geom_bar() +
+    labs(title = "Minimum Letter from 1000 Rolls of 3 Dice") +
     ylab("Count") +
     theme_classic()
 
@@ -324,7 +326,7 @@ firstletter_distribution
 # First I create a new function, equivalent to roll_alpha_dice except in that
 # the first letter is selected from 5 dice via get_letters.
 
-roll_five_dice <- function(n){
+roll_five_dice <- function(n) {
   stopifnot(is.numeric(n)) 
   map_chr(rep(5, n), get_letters)
 }
